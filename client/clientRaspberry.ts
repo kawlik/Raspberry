@@ -1,3 +1,6 @@
+import { getIlluminationLevel } from "./mock/illumination.ts";
+import { getTemperatureLevel } from "./mock/temperature.ts";
+
 const deviceName = "raspberry" + Date.now();
 const deviceType = "raspberry";
 
@@ -11,8 +14,16 @@ const socket = new WebSocket(targetURL);
 
 /*   *   *   *   *   *   *   *   *   *   */
 
-setInterval(() => socket.send("A message from " + deviceName), 5_000);
+setInterval(() =>
+	socket.send(JSON.stringify({
+		from: deviceName,
+		type: "illumination",
+		value: getIlluminationLevel(),
+	})), 10_000);
 
-socket.onmessage = (message) => {
-	console.log(message.data);
-};
+setInterval(() =>
+	socket.send(JSON.stringify({
+		from: deviceName,
+		type: "temperature",
+		value: getTemperatureLevel(),
+	})), 10_000);

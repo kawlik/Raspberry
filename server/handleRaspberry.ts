@@ -10,7 +10,9 @@ export function handleRaspberry(
 	socket.onopen = () => devicesRaspberry.set(deviceName, socket);
 
 	socket.onmessage = (message) => {
-		console.log(message.data);
+		devicesDashboard.forEach((device) => {
+			device.send(message.data);
+		});
 	};
 
 	return response;

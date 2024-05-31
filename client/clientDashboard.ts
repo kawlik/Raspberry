@@ -11,8 +11,6 @@ const socket = new WebSocket(targetURL);
 
 /*   *   *   *   *   *   *   *   *   *   */
 
-setInterval(() => socket.send("A message from " + deviceName), 5_000);
-
 socket.onmessage = (message) => {
 	console.log(message.data);
 };
