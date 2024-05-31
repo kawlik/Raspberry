@@ -1,15 +1,18 @@
 import { handleDashboard } from "./server/handleDashboard.ts";
+import { handleRaspberry } from "./server/handleRaspberry.ts";
 
 const devicesDashboard = new Map<string, WebSocket>();
 const devicesRaspberry = new Map<string, WebSocket>();
 
 Deno.serve((request) => {
-	if (request.headers.get("upgrade") === "websocket") {
+	if (request.headers.get("upgrade") !== "websocket") {
 		return new Response(null, {
 			statusText: "Server supports WebSocket only.",
 			status: 418,
 		});
 	}
+
+	/*   *   *   *   *   *   *   *   */
 
 	const requestURL = new URL(request.url);
 	const deviceName = requestURL.searchParams.get("deviceName");
@@ -20,7 +23,7 @@ Deno.serve((request) => {
 	}
 
 	if (deviceName && deviceType === "raspberry") {
-		return handleDashboard(devicesDashboard, devicesRaspberry, deviceName, request);
+		return handleRaspberry(devicesDashboard, devicesRaspberry, deviceName, request);
 	}
 
 	return new Response(null, {
