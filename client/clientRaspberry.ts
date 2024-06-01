@@ -6,7 +6,7 @@ const deviceType = "raspberry";
 
 /*   *   *   *   *   *   *   *   *   *   */
 
-const targetURL = new URL("ws://localhost:8000");
+const targetURL = new URL("wss://careful-alpaca-54.deno.dev/");
 targetURL.searchParams.set("deviceName", deviceName);
 targetURL.searchParams.set("deviceType", deviceType);
 

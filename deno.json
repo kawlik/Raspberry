@@ -3,5 +3,13 @@
 		"serve": "deno run deno.ts",
 		"start": "deno run deno.ts --watch",
 		"style": "deno fmt --indent-width=4 --line-width=96 --use-tabs"
+	},
+	"deploy": {
+		"project": "255bafd3-c258-4244-acbb-8e59c26b18f1",
+		"exclude": [
+			"**/node_modules"
+		],
+		"include": [],
+		"entrypoint": "deno.ts"
 	}
 }
