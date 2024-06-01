@@ -1,5 +1,5 @@
-import { getIlluminationLevel } from "./mock/illumination.ts";
-import { getTemperatureLevel } from "./mock/temperature.ts";
+import { type ActionData } from "./types/data.d.ts";
+import { type StatusData } from "./types/data.d.ts";
 
 const deviceName = "raspberry" + Date.now();
 const deviceType = "raspberry";
@@ -11,19 +11,36 @@ targetURL.searchParams.set("deviceName", deviceName);
 targetURL.searchParams.set("deviceType", deviceType);
 
 const socket = new WebSocket(targetURL);
+const state = new Map<string, unknown>([
+	["cooling", false],
+	["heating", false],
+]);
 
 /*   *   *   *   *   *   *   *   *   *   */
 
-setInterval(() =>
-	socket.send(JSON.stringify({
-		from: deviceName,
-		type: "illumination",
-		value: getIlluminationLevel(),
-	})), 10_000);
+socket.onmessage = (message) => {
+	const actionData = JSON.parse(message.data) as ActionData;
 
-setInterval(() =>
-	socket.send(JSON.stringify({
-		from: deviceName,
-		type: "temperature",
-		value: getTemperatureLevel(),
-	})), 10_000);
+	if (actionData.targetDeviceName !== deviceName) return;
+	if (actionData.targetDeviceType !== deviceType) return;
+
+	if (!actionData?.action) return;
+
+	if (Object.entries(actionData.action)) {
+		Object.entries(actionData.action).forEach(([key, value]) => {
+			if (state.has(key) && typeof state.get(key) === typeof value) {
+				state.set(key, value);
+			}
+		});
+	}
+};
+
+setInterval(() => {
+	socket.send(JSON.stringify(
+		<StatusData> {
+			originDeviceName: deviceName,
+			originDeviceType: deviceType,
+			status: Object.fromEntries(state.entries()),
+		},
+	));
+}, 1000);

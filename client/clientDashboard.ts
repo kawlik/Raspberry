@@ -1,3 +1,6 @@
+import { type ActionData } from "./types/data.d.ts";
+import { type StatusData } from "./types/data.d.ts";
+
 const deviceName = "dashboard" + Date.now();
 const deviceType = "dashboard";
 
@@ -12,5 +15,17 @@ const socket = new WebSocket(targetURL);
 /*   *   *   *   *   *   *   *   *   *   */
 
 socket.onmessage = (message) => {
-	console.log(message.data);
+	const statusData = JSON.parse(message.data) as StatusData;
+	const actionData = <ActionData> {
+		targetDeviceName: statusData.originDeviceName,
+		targetDeviceType: statusData.originDeviceType,
+		action: {
+			"cooling": !Math.round(Math.random()),
+			"heating": !Math.round(Math.random()),
+		},
+	};
+
+	socket.send(JSON.stringify(actionData));
+
+	console.log(statusData, actionData);
 };
